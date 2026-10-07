@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
+import FruitMatching from './pages/FruitMatching';
+import ColorRecognition from './pages/ColorRecognition';
+import DentistGame from './pages/DentistGame';
+import FarmAnimals from './pages/FarmAnimals';
 import './index.css';
 
 function App() {
@@ -42,17 +46,37 @@ function App() {
         <Route 
           path="/login" 
           element={
-            isAuthenticated ? 
-              <Navigate to="/" /> : 
-              <Login onLogin={handleLogin} />
+            isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} />
           } 
         />
         <Route 
           path="/" 
           element={
-            isAuthenticated ? 
-              <Dashboard onLogout={handleLogout} /> : 
-              <Navigate to="/login" />
+            isAuthenticated ? <Dashboard onLogout={handleLogout} /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/play/matching" 
+          element={
+            isAuthenticated ? <FruitMatching /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/play/colors" 
+          element={
+            isAuthenticated ? <ColorRecognition /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/play/dentist" 
+          element={
+            isAuthenticated ? <DentistGame /> : <Navigate to="/login" />
+          } 
+        />
+        <Route 
+          path="/play/animals" 
+          element={
+            isAuthenticated ? <FarmAnimals /> : <Navigate to="/login" />
           } 
         />
       </Routes>

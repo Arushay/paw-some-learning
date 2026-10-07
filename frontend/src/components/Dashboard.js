@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from './Header';
 import Stats from './Stats';
 import TodayProgress from './TodayProgress';
 import RecentActivity from './RecentActivity';
+import MissionSlider from './MissionSlider';
 import { getDashboard } from '../services/api';
 import '../index.css';
 
@@ -10,6 +12,7 @@ const Dashboard = ({ onLogout }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [dashboard, setDashboard] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboard = async () => {
@@ -35,9 +38,13 @@ const Dashboard = ({ onLogout }) => {
     fetchDashboard();
   }, []);
 
+  const handleSelectMission = (type) => {
+    navigate(`/play/${type}`);
+  };
+
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center animated-bg">
         <div className="text-center">
           <p className="text-4xl mb-4">🐶</p>
           <p className="text-xl text-purple-600">Loading your dashboard...</p>
@@ -48,8 +55,8 @@ const Dashboard = ({ onLogout }) => {
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center paw-card border-red-300 bg-red-50">
+      <div className="min-h-screen flex items-center justify-center animated-bg">
+        <div className="text-center paw-card border-red-300 bg-red-50 p-8 rounded-2xl">
           <p className="text-2xl mb-2">❌</p>
           <p className="text-red-600 font-medium">{error}</p>
           <button 
@@ -64,14 +71,20 @@ const Dashboard = ({ onLogout }) => {
   }
 
   return (
-    <div className="min-h-screen p-4 md:p-8 max-w-4xl mx-auto">
-      <Header childName="Hiba" onLogout={onLogout} />
-      <Stats totalStars={dashboard.totalStars} streak={dashboard.streak} />
-      <TodayProgress progress={dashboard.todayProgress} />
-      <RecentActivity activities={dashboard.recentActivity} />
-      
-      <div className="mt-8 text-center text-sm text-gray-400 border-t border-gray-200 pt-4">
-        🐾 Paw-some Learning • Made with ❤️ for little learners
+    <div className="min-h-screen animated-bg p-4 md:p-8">
+      <div className="max-w-4xl mx-auto">
+        <Header childName="Hiba" onLogout={onLogout} />
+        
+        {/* Mission Carousel */}
+        <MissionSlider onSelectMission={handleSelectMission} />
+        
+        <Stats totalStars={dashboard.totalStars} streak={dashboard.streak} />
+        <TodayProgress progress={dashboard.todayProgress} />
+        <RecentActivity activities={dashboard.recentActivity} />
+        
+        <div className="mt-8 text-center text-sm text-gray-400 border-t border-gray-200 pt-4">
+          🐾 Paw-some Learning • Made with ❤️ for Hiba
+        </div>
       </div>
     </div>
   );

@@ -9,10 +9,6 @@ const register = async (req, res) => {
     try {
         const { email, password } = req.body;
 
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password required' });
-        }
-
         // Check if user exists
         const existingUser = await findUserByEmail(email);
         if (existingUser) {
@@ -26,7 +22,7 @@ const register = async (req, res) => {
         const newUser = await createUser(email, hashedPassword);
 
         res.status(201).json({
-            message: 'User created successfully!',
+            message: 'User created successfully! 🎉',
             user: { id: newUser.id, email: newUser.email }
         });
     } catch (error) {
@@ -39,10 +35,6 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     try {
         const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password required' });
-        }
 
         // Find user
         const user = await findUserByEmail(email);
@@ -64,7 +56,7 @@ const login = async (req, res) => {
         );
 
         res.json({
-            message: 'Login successful!',
+            message: 'Login successful! 🐶',
             token,
             user: { id: user.id, email: user.email }
         });

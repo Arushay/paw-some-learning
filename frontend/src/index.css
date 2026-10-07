@@ -4,8 +4,19 @@
 
 body {
   font-family: 'Comic Sans MS', 'Chalkboard SE', cursive;
-  background: linear-gradient(135deg, #fdf2f8 0%, #ede9fe 100%);
   min-height: 100vh;
+}
+
+@keyframes gradientMove {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animated-bg {
+  background: linear-gradient(-45deg, #fdf2f8, #ede9fe, #fce7f3, #f3e8ff);
+  background-size: 400% 400%;
+  animation: gradientMove 10s ease infinite;
 }
 
 .paw-card {

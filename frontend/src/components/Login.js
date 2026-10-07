@@ -17,13 +17,13 @@ const Login = ({ onLogin }) => {
     try {
       const data = await loginUser(email, password);
       
-      // Save token to localStorage
+      // ✅ Store token automatically
       localStorage.setItem('token', data.token);
       
-      // Notify parent component
+      // ✅ Notify parent
       onLogin();
       
-      // Redirect to dashboard
+      // ✅ Redirect to dashboard
       navigate('/');
     } catch (err) {
       setError(err.response?.data?.error || 'Login failed. Please try again.');
