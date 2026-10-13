@@ -43,6 +43,20 @@ A full‑stack, toddler‑friendly learning app with daily missions, progress tr
 
 ---
 
+## 🐳 Run with Docker (Easiest Way)
+
+The fastest way to run the whole app — no manual setup needed!
+
+### Prerequisites
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installed and running
+
+### One command to start everything
+
+```bash
+git clone https://github.com/Arushay/paw-some-learning.git
+cd paw-some-learning
+docker compose up
+
 ## 🚀 Getting Started
 
 ### Prerequisites
