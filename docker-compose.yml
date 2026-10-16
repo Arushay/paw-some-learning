@@ -20,11 +20,7 @@ services:
       - "3000:3000"
     environment:
       PORT: 3000
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: paw_some_learning
-      DB_USER: postgres
-      DB_PASSWORD: postgres
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/paw_some_learning
       JWT_SECRET: your-super-secret-key-change-this
     depends_on:
       - db
