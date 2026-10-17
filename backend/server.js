@@ -16,7 +16,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+// app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3001',
+    'https://paw-some-learning.vercel.app' // <-- Your new Vercel URL
+  ],
+  credentials: true
+}));
 app.use(express.json());
 app.use(logger);
 app.use('/dashboard', dashboardRoutes);
