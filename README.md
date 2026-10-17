@@ -1,6 +1,8 @@
 # 🐶 Paw-some Learning Missions
 
 A full‑stack, toddler‑friendly learning app with daily missions, progress tracking, and a parent dashboard. Built with React, Node.js, Express, PostgreSQL, and Tailwind CSS.
+🔗 **Live Demo:** https://paw-some-learning.vercel.app  
+🔗 **Backend API:** https://paw-some-learning.onrender.com
 
 ---
 
