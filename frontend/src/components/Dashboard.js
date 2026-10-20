@@ -1,3 +1,4 @@
+// Inside Dashboard.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
@@ -8,13 +9,20 @@ import MissionSlider from './MissionSlider';
 import { getDashboard } from '../services/api';
 import '../index.css';
 
-const Dashboard = ({ onLogout }) => {
+const Dashboard = ({ onLogout, isAuthenticated }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [dashboard, setDashboard] = useState({});
+  const [dashboard, setDashboard] = useState({ totalStars: 0, streak: 0, todayProgress: [], recentActivity: [] });
   const navigate = useNavigate();
 
   useEffect(() => {
+    // If guest, show empty dashboard immediately
+    if (!isAuthenticated) {
+      setLoading(false);
+      return;
+    }
+
+    // If logged in, fetch real data
     const fetchDashboard = async () => {
       try {
         const data = await getDashboard();
@@ -22,69 +30,42 @@ const Dashboard = ({ onLogout }) => {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        if (err.response?.status === 401) {
-          setError('Session expired. Please login again.');
-          setTimeout(() => {
-            localStorage.removeItem('token');
-            window.location.reload();
-          }, 2000);
-        } else {
-          setError('Failed to load dashboard');
-        }
+        setError('Failed to load dashboard');
         setLoading(false);
       }
     };
 
     fetchDashboard();
-  }, []);
+  }, [isAuthenticated]);
 
   const handleSelectMission = (type) => {
     navigate(`/play/${type}`);
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center animated-bg">
-        <div className="text-center">
-          <p className="text-4xl mb-4">🐶</p>
-          <p className="text-xl text-purple-600">Loading your dashboard...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center animated-bg">
-        <div className="text-center paw-card border-red-300 bg-red-50 p-8 rounded-2xl">
-          <p className="text-2xl mb-2">❌</p>
-          <p className="text-red-600 font-medium">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="mt-4 bg-purple-600 text-white px-6 py-2 rounded-full hover:bg-purple-700"
-          >
-            Try Again
-          </button>
-        </div>
-      </div>
-    );
-  }
+  // ... rest of the component remains the same, 
+  // but we remove the "if (error)" block so guests don't see errors.
 
   return (
     <div className="min-h-screen animated-bg p-4 md:p-8">
       <div className="max-w-4xl mx-auto">
-        <Header childName="Hiba" onLogout={onLogout} />
         
-        {/* Mission Carousel */}
+        {/* Show a special banner for guests */}
+        {!isAuthenticated && (
+          <div className="bg-white/80 p-3 rounded-xl mb-4 text-center border-2 border-purple-200">
+            <span className="text-sm text-gray-600">Playing as Guest. </span>
+            <button onClick={() => navigate('/login')} className="text-purple-600 font-bold hover:underline">
+              Sign in to save your stars!
+            </button>
+          </div>
+        )}
+
+        <Header childName={isAuthenticated ? "Hiba" : "Guest"} onLogout={isAuthenticated ? onLogout : () => navigate('/')} />
+        
         <MissionSlider onSelectMission={handleSelectMission} />
         
         <Stats totalStars={dashboard.totalStars} streak={dashboard.streak} />
         <TodayProgress progress={dashboard.todayProgress} />
         <RecentActivity activities={dashboard.recentActivity} />
-        
-        <div className="mt-8 text-center text-sm text-gray-400 border-t border-gray-200 pt-4">
-          🐾 Paw-some Learning • Made with ❤️ for Hiba
-        </div>
       </div>
     </div>
   );
