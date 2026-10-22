@@ -43,49 +43,68 @@ const FruitMatching = () => {
     e.preventDefault();
   };
 
-  return (
+    return (
     <PlayPage title="Fruit Matching" icon="🍎" color="from-pink-400 to-rose-400">
       <div className="text-center mb-4">
-        <p className="text-xl font-semibold text-gray-700">
-          ⭐ Score: {score} / {fruits.length}
-        </p>
+        {/* We use stars instead of text for the score */}
+        <div className="text-3xl mb-2">
+          {Array.from({ length: fruits.length }).map((_, i) => (
+            <span key={i} className={i < score ? 'opacity-100' : 'opacity-20'}>
+              ⭐
+            </span>
+          ))}
+        </div>
         {message && (
-          <p className="text-lg font-medium text-purple-600 mt-2">{message}</p>
+          <p className="text-3xl">{message}</p>
         )}
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
+      {/* Draggable Fruits */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
         {fruits.map((fruit) => (
           <div
             key={fruit.id}
             draggable={!matched[fruit.id]}
             onDragStart={(e) => handleDragStart(e, fruit)}
             className={`text-6xl p-6 rounded-2xl text-center cursor-grab transition ${
-              matched[fruit.id] ? 'opacity-50 bg-gray-100 cursor-default' : 'bg-purple-50 hover:bg-purple-100'
+              matched[fruit.id] 
+                ? 'opacity-0' // Hide fruit when matched
+                : 'bg-white shadow-md border-2 border-purple-100 hover:scale-105'
             }`}
           >
             {fruit.emoji}
-            <p className="text-sm text-gray-500 mt-2">{fruit.name}</p>
           </div>
         ))}
       </div>
 
+      {/* Drop Zones (Shadows) */}
       <div className="grid grid-cols-2 gap-4">
         {fruits.map((fruit) => (
           <div
             key={fruit.id}
             onDrop={(e) => handleDrop(e, fruit)}
             onDragOver={handleDragOver}
-            className={`h-24 rounded-2xl border-4 border-dashed flex items-center justify-center text-2xl font-bold transition ${
-              matched[fruit.id] ? 'border-green-400 bg-green-50' : 'border-purple-300 bg-purple-50'
+            className={`h-28 rounded-2xl border-4 border-dashed flex items-center justify-center text-6xl transition ${
+              matched[fruit.id] 
+                ? 'border-green-400 bg-green-50' 
+                : 'border-gray-300 bg-gray-100'
             }`}
           >
-            {matched[fruit.id] ? '✅' : fruit.name}
+            {/* The Shadow! We use CSS filter to make it black */}
+            {matched[fruit.id] ? (
+              <span className="drop-shadow-md">✨</span> 
+            ) : (
+              <span className="opacity-20 grayscale brightness-0">
+                {fruit.emoji}
+              </span>
+            )}
           </div>
         ))}
       </div>
     </PlayPage>
   );
+    
+   
 };
 
 export default FruitMatching;

@@ -12,13 +12,33 @@ const animals = [
 
 const FarmAnimals = () => {
   const [message, setMessage] = useState('');
-
   const playSound = (animal) => {
+    setMessage(`🐾 ${animal.emoji} says: ${animal.sound}`);
+    
+    // Stop any currently speaking voice
+    window.speechSynthesis.cancel();
+
+    // Create the speech
     const utterance = new SpeechSynthesisUtterance(animal.sound);
-  utterance.rate = 1.2;
-  utterance.pitch = 1.5;
-  window.speechSynthesis.speak(utterance);
-  setMessage(`🐾 ${animal.emoji} says: ${animal.sound}`);
+    
+    // 🎛️ Tune the voice to be kid-friendly
+    utterance.rate = 0.8;   // Slower (normal is 1.0)
+    utterance.pitch = 1.3;  // Slightly higher/cheerful
+    utterance.volume = 1;   // Maximum volume
+
+    // Try to find a female/child voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const friendlyVoice = voices.find(voice => 
+      voice.name.includes('Samantha') || // Mac female voice
+      voice.name.includes('Google UK English Female') || 
+      voice.name.includes('Zira')
+    );
+    
+    if (friendlyVoice) {
+      utterance.voice = friendlyVoice;
+    }
+
+    window.speechSynthesis.speak(utterance);
   };
 
   return (
