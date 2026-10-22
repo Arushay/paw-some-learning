@@ -7,6 +7,7 @@ import FruitMatching from './pages/FruitMatching';
 import ColorRecognition from './pages/ColorRecognition';
 import DentistGame from './pages/DentistGame';
 import FarmAnimals from './pages/FarmAnimals';
+import AnimalPuzzle from './pages/AnimalPuzzle';
 import './index.css';
 
 function App() {
@@ -64,6 +65,7 @@ function App() {
         <Route path="/play/colors" element={<ColorRecognition />} />
         <Route path="/play/dentist" element={<DentistGame />} />
         <Route path="/play/animals" element={<FarmAnimals />} />
+        <Route path="/play/animals" element={<AnimalPuzzle />} />
       </Routes>
     </BrowserRouter>
   );
