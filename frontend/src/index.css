@@ -26,3 +26,15 @@ body {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   border: 2px solid #e9d5ff;
 }
+@keyframes confetti-fall {
+  0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+  100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
+
+.confetti {
+  position: fixed;
+  top: -10px;
+  animation: confetti-fall 3s linear forwards;
+  z-index: 100;
+  font-size: 2rem;
+}
