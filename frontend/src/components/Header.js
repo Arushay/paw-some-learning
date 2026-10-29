@@ -1,6 +1,6 @@
 import React from 'react';
 
-const Header = ({ childName, onLogout }) => {
+const Header = ({ childName, onLogout, isAuthenticated }) => {
   return (
     <header className="flex justify-between items-center p-6 bg-white/80 backdrop-blur-sm rounded-2xl shadow-md mb-8 border-2 border-purple-200">
       <div className="flex items-center gap-3">
@@ -17,9 +17,9 @@ const Header = ({ childName, onLogout }) => {
         )}
         <button 
           onClick={onLogout}
-          className="text-gray-500 hover:text-red-500 transition-colors text-sm font-medium"
+          className="text-gray-500 hover:text-purple-600 transition-colors text-sm font-bold"
         >
-          Logout
+          {isAuthenticated ? 'Logout' : 'Sign In'}
         </button>
       </div>
     </header>

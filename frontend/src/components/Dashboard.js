@@ -1,4 +1,3 @@
-// Inside Dashboard.js
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from './Header';
@@ -30,8 +29,14 @@ const Dashboard = ({ onLogout, isAuthenticated }) => {
         setLoading(false);
       } catch (err) {
         console.error(err);
-        setError('Failed to load dashboard');
-        setLoading(false);
+        if (err.response?.status === 401) {
+          // Token expired
+          localStorage.removeItem('token');
+          window.location.reload();
+        } else {
+          setError('Failed to load dashboard');
+          setLoading(false);
+        }
       }
     };
 
@@ -42,8 +47,16 @@ const Dashboard = ({ onLogout, isAuthenticated }) => {
     navigate(`/play/${type}`);
   };
 
-  // ... rest of the component remains the same, 
-  // but we remove the "if (error)" block so guests don't see errors.
+  if (loading) {
+    return (
+      <div className="min-h-screen animated-bg flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-4xl mb-4">🐶</p>
+          <p className="text-xl text-purple-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen animated-bg p-4 md:p-8">
@@ -59,7 +72,12 @@ const Dashboard = ({ onLogout, isAuthenticated }) => {
           </div>
         )}
 
-        <Header childName={isAuthenticated ? "Hiba" : "Guest"} onLogout={isAuthenticated ? onLogout : () => navigate('/')} />
+        {/* The Header needs a small update to change the button text if guest */}
+        <Header 
+          childName={isAuthenticated ? "Hiba" : "Guest"} 
+          onLogout={isAuthenticated ? onLogout : () => navigate('/login')} 
+          isAuthenticated={isAuthenticated}
+        />
         
         <MissionSlider onSelectMission={handleSelectMission} />
         

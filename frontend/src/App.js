@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import HomePage from './pages/HomePage'; 
 import Login from './components/Login';
 import Dashboard from './components/Dashboard';
 import FruitMatching from './pages/FruitMatching';
 import ColorRecognition from './pages/ColorRecognition';
 import DentistGame from './pages/DentistGame';
-// import FarmAnimals from './pages/FarmAnimals';
-import AnimalPuzzle from './pages/AnimalPuzzle';
+import FarmAnimals from './pages/FarmAnimals';
+import AnimalPuzzle from './pages/AnimalPuzzle'; // Make sure this is imported!
 import './index.css';
 
 function App() {
@@ -32,39 +31,28 @@ function App() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-4xl mb-4">🐶</p>
-          <p className="text-xl text-purple-600">Loading...</p>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
   return (
     <BrowserRouter>
- <Routes>
-        {/* 1. Public Homepage */}
-        <Route path="/" element={<HomePage />} />
+      <Routes>
+        {/* 1. Default Page is the Dashboard (Guest Mode) */}
+        <Route 
+          path="/" 
+          element={<Dashboard onLogout={handleLogout} isAuthenticated={isAuthenticated} />} 
+        />
 
         {/* 2. Login Page */}
         <Route 
           path="/login" 
-          element={isAuthenticated ? <Navigate to="/dashboard" /> : <Login onLogin={handleLogin} />} 
+          element={isAuthenticated ? <Navigate to="/" /> : <Login onLogin={handleLogin} />} 
         />
 
-        {/* 3. Dashboard (Guests can view, but data might be empty) */}
-        <Route 
-          path="/dashboard" 
-          element={<Dashboard onLogout={handleLogout} isAuthenticated={isAuthenticated} />} 
-        />
-
-        {/* 4. Games (Anyone can play) */}
-        <Route path="/play/matching" element={<FruitMatching />} />
+        {/* 3. Games */}
+        <Route path="/play/matching" element={<AnimalPuzzle />} />
         <Route path="/play/colors" element={<ColorRecognition />} />
         <Route path="/play/dentist" element={<DentistGame />} />
-        {/* <Route path="/play/animals" element={<FarmAnimals />} /> */}
         <Route path="/play/animals" element={<AnimalPuzzle />} />
       </Routes>
     </BrowserRouter>
