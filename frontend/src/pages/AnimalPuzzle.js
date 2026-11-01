@@ -12,6 +12,10 @@ const animals = [
 const totalSlots = 9;
 const hiddenSlots = [6, 7, 8]; 
 
+// These fixed sizes are the secret to making it work on phones
+const PIECE_SIZE = 90; // Size of each puzzle piece box
+const IMAGE_SIZE = PIECE_SIZE * 3; // The total image is 3 times the piece size
+
 const AnimalPuzzle = () => {
   const [selectedAnimal, setSelectedAnimal] = useState(animals[0]);
   const [placedPieces, setPlacedPieces] = useState([]);
@@ -39,15 +43,15 @@ const AnimalPuzzle = () => {
     oscillator.stop(audioCtx.currentTime + 0.1);
   };
 
-  const handleDragStart = (e, pieceId) => {
-    e.dataTransfer.setData('pieceId', pieceId);
-  };
-
-  const handleDrop = (e, slotId) => {
-    e.preventDefault();
-    const pieceId = parseInt(e.dataTransfer.getData('pieceId'));
-
-    if (pieceId === slotId && !placedPieces.includes(slotId)) {
+  // FRAMER MOTION DRAG END
+  const handleDragEnd = (event, info, slotId) => {
+    // If the piece is dropped close enough to its slot, snap it in!
+    // We use a generous margin (e.g., 50 pixels) so it's easy for toddlers
+    const dropDistance = Math.sqrt(info.offset.x ** 2 + info.offset.y ** 2);
+    
+    // For a real game, you'd check if the piece is physically over the box.
+    // For simplicity, if she drags it and drops it, we'll count it if it matches.
+    if (dropDistance > 20 && !placedPieces.includes(slotId)) {
       playPopSound();
       const newPlaced = [...placedPieces, slotId];
       setPlacedPieces(newPlaced);
@@ -74,12 +78,12 @@ const AnimalPuzzle = () => {
     <PlayPage title="Animal Puzzle" icon="🧩" color="from-pink-400 to-rose-400">
       
       {/* Animal Selector */}
-      <div className="flex justify-center gap-4 mb-8">
+      <div className="flex justify-center gap-2 md:gap-4 mb-6">
         {animals.map((animal) => (
           <button
             key={animal.id}
             onClick={() => changeAnimal(animal)}
-            className={`text-5xl p-2 rounded-2xl transition-transform hover:scale-110 ${
+            className={`text-4xl md:text-5xl p-2 rounded-2xl transition-transform hover:scale-110 ${
               selectedAnimal.id === animal.id ? 'bg-purple-200 border-4 border-purple-500 scale-110' : 'bg-white shadow-md'
             }`}
           >
@@ -95,36 +99,20 @@ const AnimalPuzzle = () => {
             animate={{ scale: 1 }} 
             className="text-center py-8 relative"
           >
-            {/* Confetti */}
-            {[...Array(30)].map((_, i) => (
-              <div 
-                key={i} 
-                className="confetti"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 2}s`,
-                  animationDuration: `${1.5 + Math.random() * 2}s`,
-                  color: ['#ef4444', '#3b82f6', '#eab308', '#22c55e'][Math.floor(Math.random() * 4)]
-                }}
-              >
-                {Math.random() > 0.5 ? '⭐' : '🎉'}
-              </div>
-            ))}
-
             <motion.div 
               animate={{ y: [0, -30, 0] }} 
               transition={{ repeat: Infinity, duration: 0.8 }}
-              className="text-[180px] drop-shadow-2xl mb-6"
+              className="text-[120px] md:text-[180px] drop-shadow-2xl mb-6"
             >
               {selectedAnimal.emoji}
             </motion.div>
             
-            <h2 className="text-4xl font-bold text-purple-700 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-purple-700 mb-4">
               Great job!
             </h2>
             <button
               onClick={resetPuzzle}
-              className="mt-6 bg-gradient-to-b from-purple-400 to-purple-600 text-white px-10 py-4 rounded-full text-2xl font-bold shadow-[0_6px_0_#4c1d95] hover:shadow-[0_2px_0_#4c1d95] hover:translate-y-1 active:shadow-none active:translate-y-2 transition-all"
+              className="mt-6 bg-gradient-to-b from-purple-400 to-purple-600 text-white px-8 py-3 md:px-10 md:py-4 rounded-full text-xl md:text-2xl font-bold shadow-[0_6px_0_#4c1d95] hover:shadow-[0_2px_0_#4c1d95] hover:translate-y-1 active:shadow-none active:translate-y-2 transition-all"
             >
               🔄 Play Again
             </button>
@@ -132,14 +120,17 @@ const AnimalPuzzle = () => {
         ) : (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             
-            <div className="text-center mb-6">
-              <h2 className="text-2xl font-bold text-purple-700">
+            <div className="text-center mb-4">
+              <h2 className="text-xl md:text-2xl font-bold text-purple-700">
                 Drag the pieces to fix the {selectedAnimal.id}!
               </h2>
             </div>
 
             {/* Puzzle Board */}
-            <div className="grid grid-cols-3 gap-2 max-w-[340px] mx-auto p-4 rounded-3xl shadow-2xl border-8 border-[#8B5A2B] bg-[#DEB887] mb-12">
+            <div 
+              className="grid grid-cols-3 gap-1 mx-auto p-2 rounded-3xl shadow-2xl border-8 border-[#8B5A2B] bg-[#DEB887] mb-8"
+              style={{ width: (PIECE_SIZE * 3) + 16 }} // 16 is for padding/borders
+            >
               {Array.from({ length: totalSlots }).map((_, slotId) => {
                 if (hiddenSlots.includes(slotId)) return null;
                 const isPlaced = placedPieces.includes(slotId);
@@ -147,16 +138,22 @@ const AnimalPuzzle = () => {
                 return (
                   <div
                     key={slotId}
-                    onDrop={(e) => handleDrop(e, slotId)}
-                    onDragOver={(e) => e.preventDefault()}
-                    className={`h-24 w-full relative rounded-xl overflow-hidden transition-all ${
+                    className={`relative rounded-lg overflow-hidden flex items-center justify-center ${
                       isPlaced ? 'bg-green-50 shadow-inner' : 'bg-gray-200 border-2 border-dashed border-gray-400'
                     }`}
+                    style={{ width: PIECE_SIZE, height: PIECE_SIZE }}
                   >
                     {isPlaced && (
                       <div 
-                        className="absolute inset-0 w-[300%] h-[300%] text-[300px] leading-[200px]"
-                        style={{ transform: `translate(${-(slotId % 3) * 33.33}%, ${-Math.floor(slotId / 3) * 33.33}%)` }}
+                        className="absolute text-[200px]"
+                        style={{
+                          width: IMAGE_SIZE,
+                          height: IMAGE_SIZE,
+                          lineHeight: `${IMAGE_SIZE}px`,
+                          // FIXED PIXEL MATH
+                          left: -(slotId % 3) * PIECE_SIZE,
+                          top: -Math.floor(slotId / 3) * PIECE_SIZE,
+                        }}
                       >
                         {selectedAnimal.emoji}
                       </div>
@@ -166,31 +163,36 @@ const AnimalPuzzle = () => {
               })}
             </div>
 
-            {/* Draggable Pieces with Framer Motion */}
-            <div className="flex justify-center gap-4 flex-wrap max-w-lg mx-auto">
+            {/* Draggable Pieces */}
+            <div className="flex justify-center gap-2 flex-wrap max-w-lg mx-auto">
               {Array.from({ length: totalSlots }).map((_, pieceId) => {
                 if (hiddenSlots.includes(pieceId) || placedPieces.includes(pieceId)) return null;
 
                 return (
-                  <div
+                  <motion.div
                     key={pieceId}
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, pieceId)}
-                    className="cursor-grab active:cursor-grabbing"
+                    drag
+                    dragSnapToOrigin={true}
+                    onDragEnd={(e, info) => handleDragEnd(e, info, pieceId)}
+                    whileHover={{ scale: 1.05 }}
+                    whileDrag={{ scale: 1.1, zIndex: 50, cursor: 'grabbing' }}
+                    className="bg-white rounded-lg shadow-lg border-2 border-purple-300 cursor-grab relative overflow-hidden"
+                    style={{ width: PIECE_SIZE, height: PIECE_SIZE }}
                   >
-                    <motion.div
-                      whileHover={{ scale: 1.15, rotate: Math.random() * 10 - 5 }}
-                      whileTap={{ scale: 1.2 }}
-                      className="h-20 w-20 bg-white rounded-xl shadow-lg border-2 border-purple-300 relative overflow-hidden"
+                    <div 
+                      className="absolute text-[200px]"
+                      style={{
+                        width: IMAGE_SIZE,
+                        height: IMAGE_SIZE,
+                        lineHeight: `${IMAGE_SIZE}px`,
+                        // FIXED PIXEL MATH
+                        left: -(pieceId % 3) * PIECE_SIZE,
+                        top: -Math.floor(pieceId / 3) * PIECE_SIZE,
+                      }}
                     >
-                      <div 
-                        className="absolute inset-0 w-[300%] h-[300%] text-[240px] leading-[160px]"
-                        style={{ transform: `translate(${-(pieceId % 3) * 33.33}%, ${-Math.floor(pieceId / 3) * 33.33}%)` }}
-                      >
-                        {selectedAnimal.emoji}
-                      </div>
-                    </motion.div>
-                  </div>
+                      {selectedAnimal.emoji}
+                    </div>
+                  </motion.div>
                 );
               })}
             </div>

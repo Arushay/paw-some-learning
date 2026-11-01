@@ -50,7 +50,7 @@ function App() {
         />
 
         {/* 3. Games */}
-        <Route path="/play/matching" element={<AnimalPuzzle />} />
+        <Route path="/play/matching" element={<FruitMatching />} />
         <Route path="/play/colors" element={<ColorRecognition />} />
         <Route path="/play/dentist" element={<DentistGame />} />
         <Route path="/play/animals" element={<AnimalPuzzle />} />
